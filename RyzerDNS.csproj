@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationTitle>RyzerDNS Client</ApplicationTitle>
+    <AssemblyName>RyzerDNS</AssemblyName>
+    <RootNamespace>RyzerDNS</RootNamespace>
+    <ApplicationIcon>Assets\app.ico</ApplicationIcon>
+    
+    <!-- Assembly Metadata -->
+    <Company>RyzerDNS</Company>
+    <Product>RyzerDNS Client</Product>
+    <Title>RyzerDNS Network Optimizer</Title>
+    <AssemblyTitle>RyzerDNS Network Optimizer</AssemblyTitle>
+    <Description>RyzerDNS Network Optimizer</Description>
+    <Copyright>© 2026 RyzerDNS</Copyright>
+    <Version>1.0.0.0</Version>
+    <AssemblyVersion>1.0.0.0</AssemblyVersion>
+    <FileVersion>1.0.0.0</FileVersion>
+    <InformationalVersion>1.0.0.0</InformationalVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="last\**" />
+    <Page Remove="last\**" />
+    <None Remove="last\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\**\*" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,48 @@
+name: Build & Package Windows Desktop App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8 SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Setup Inno Setup Compiler
+        uses: ErwinSilvr/setup-inno-setup@v2
+        with:
+          inno-version: '6.2.2'
+
+      - name: Publish Self-Contained Win-x64 App
+        run: |
+          dotnet publish RyzerDNS.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=false -o ./publish
+
+      - name: Copy Runtime Assets
+        run: |
+          if (Test-Path -Path "Assets") {
+            New-Item -ItemType Directory -Force -Path "publish/Assets"
+            Copy-Item -Path "Assets/*" -Destination "publish/Assets" -Recurse -Force
+          }
+
+      - name: Compile Inno Setup Installer
+        run: |
+          ISCC.exe installer.iss
+
+      - name: Upload Output Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: RyzerDNS-Windows-Release
+          path: |
+            Output/*.exe
+            publish/*.exe
+            publish/*.dll

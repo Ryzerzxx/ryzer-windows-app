@@ -1,0 +1,133 @@
+<Application x:Class="RyzerDNS.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml">
+    <Application.Resources>
+        <!-- Registered Local Fonts -->
+        <FontFamily x:Key="LogoFont">./Assets/#Syne, Segoe UI</FontFamily>
+        <FontFamily x:Key="AppFont">./Assets/#Vazirmatn, Segoe UI, Tahoma</FontFamily>
+
+        <!-- Cyber-Glass Deep Color Palette -->
+        <Color x:Key="BgGradStartColor">#040407</Color>
+        <Color x:Key="BgGradEndColor">#090910</Color>
+        <LinearGradientBrush x:Key="WindowBgGradient" StartPoint="0,0" EndPoint="0,1">
+            <GradientStop Color="#040407" Offset="0.0"/>
+            <GradientStop Color="#090910" Offset="1.0"/>
+        </LinearGradientBrush>
+
+        <!-- Glass Cards & Borders -->
+        <SolidColorBrush x:Key="GlassCardBg" Color="#0D0D18" />
+        <SolidColorBrush x:Key="GlassCardBorder" Color="#1C1C2E" />
+        <SolidColorBrush x:Key="GlassHighlight" Color="#FFFFFF" Opacity="0.05" />
+
+        <!-- Input Fields -->
+        <SolidColorBrush x:Key="InputBg" Color="#131322" />
+        <SolidColorBrush x:Key="InputBorder" Color="#202035" />
+
+        <!-- Brand Accents -->
+        <SolidColorBrush x:Key="AccentRed" Color="#FF3B5C" />
+        <SolidColorBrush x:Key="AccentRedDark" Color="#D01435" />
+        <SolidColorBrush x:Key="AccentRedGlow" Color="#26FF3B5C" />
+        <SolidColorBrush x:Key="AccentGreen" Color="#00E676" />
+        <SolidColorBrush x:Key="AccentGreenDark" Color="#00C853" />
+        <SolidColorBrush x:Key="AccentGreenGlow" Color="#2600E676" />
+        <SolidColorBrush x:Key="AccentYellow" Color="#FFB300" />
+        <SolidColorBrush x:Key="AccentYellowGlow" Color="#26FFB300" />
+
+        <!-- Typography Palette -->
+        <SolidColorBrush x:Key="TextPrimary" Color="#FFFFFF" />
+        <SolidColorBrush x:Key="TextSecondary" Color="#8E8EA8" />
+        <SolidColorBrush x:Key="TextMuted" Color="#5A5A72" />
+
+        <!-- Global TextBlock Styling for Clean Persian Rendering -->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+            <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+        </Style>
+
+        <!-- Cyber-Glass Dark TextBox (MinHeight 46px, 12px CornerRadius, Red Focus Glow) -->
+        <Style x:Key="CyberTextBox" TargetType="TextBox">
+            <Setter Property="Background" Value="{StaticResource InputBg}" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="BorderBrush" Value="{StaticResource InputBorder}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="14,0" />
+            <Setter Property="Height" Value="46" />
+            <Setter Property="FontSize" Value="13.5" />
+            <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+            <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="12">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#2E2E4A" />
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource AccentRed}" />
+                                <Setter TargetName="border" Property="Background" Value="#17172A" />
+                                <Setter TargetName="border" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect BlurRadius="12" Color="#FF3B5C" Opacity="0.25" Direction="0" ShadowDepth="0"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Cyber-Glass Dark PasswordBox (MinHeight 46px, 12px CornerRadius, Red Focus Glow) -->
+        <Style x:Key="CyberPasswordBox" TargetType="PasswordBox">
+            <Setter Property="Background" Value="{StaticResource InputBg}" />
+            <Setter Property="Foreground" Value="#FFFFFF" />
+            <Setter Property="BorderBrush" Value="{StaticResource InputBorder}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Padding" Value="14,0" />
+            <Setter Property="Height" Value="46" />
+            <Setter Property="FontSize" Value="13.5" />
+            <Setter Property="FontFamily" Value="{StaticResource AppFont}" />
+            <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+            <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Border x:Name="border"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="12">
+                            <ScrollViewer x:Name="PART_ContentHost" Focusable="false" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#2E2E4A" />
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource AccentRed}" />
+                                <Setter TargetName="border" Property="Background" Value="#17172A" />
+                                <Setter TargetName="border" Property="Effect">
+                                    <Setter.Value>
+                                        <DropShadowEffect BlurRadius="12" Color="#FF3B5C" Opacity="0.25" Direction="0" ShadowDepth="0"/>
+                                    </Setter.Value>
+                                </Setter>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Application.Resources>
+</Application>
