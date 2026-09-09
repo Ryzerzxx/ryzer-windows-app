@@ -237,7 +237,7 @@ namespace RyzerDNS.Services
         {
             try
             {
-                var payload = new { mode = "login" };
+                var payload = new { mode = "login", init_data = "windows_client" };
                 var content = new StringContent(JsonSerializer.Serialize(payload), Encoding.UTF8, "application/json");
                 var response = await _httpClient.PostAsync("/api/auth/google/miniapp-init", content);
                 if (response.IsSuccessStatusCode)
