@@ -1213,8 +1213,7 @@ namespace RyzerDNS
 
         private void BtnAbout_Click(object sender, RoutedEventArgs e)
         {
-            var dialog = new Dialogs.AboutDialog { Owner = this };
-            dialog.ShowDialog();
+            ShowModal("درباره رایزر دی‌ان‌اس", "نسخه رسمی کلاینت ویندوز RyzerDNS\nسرویس هوشمند رفع تحریم و کاهش پینگ بازی‌ها\nوب‌سایت: ryzerdns.ir", "متوجه شدم", null, null, null, ModalType.Info);
         }
 
         private static void OpenBrowserUrl(string url)
