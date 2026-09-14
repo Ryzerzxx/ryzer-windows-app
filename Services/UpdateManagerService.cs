@@ -156,6 +156,7 @@ del ""%~f0"" >nul 2>&1
                     FileName = tempUpdaterScript,
                     WorkingDirectory = baseDir,
                     UseShellExecute = true,
+                    Verb = "runas", // Ensure Administrator privileges to overwrite in Program Files
                     CreateNoWindow = true,
                     WindowStyle = ProcessWindowStyle.Hidden
                 };

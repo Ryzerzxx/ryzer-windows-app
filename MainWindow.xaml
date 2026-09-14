@@ -351,7 +351,7 @@
                                     <Button.Template>
                                         <ControlTemplate TargetType="Button">
                                             <Border x:Name="pill" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="8" Padding="10,4">
-                                                <TextBlock x:Name="txt" Text="وب‌سایت رسمی" FontSize="11.5" FontWeight="SemiBold" Foreground="#82829E" VerticalAlignment="Center"
+                                                <TextBlock x:Name="txt" Text="وب‌سایت" FontSize="11.5" FontWeight="SemiBold" Foreground="#82829E" VerticalAlignment="Center"
                                                            TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"/>
                                             </Border>
                                             <ControlTemplate.Triggers>
@@ -665,7 +665,7 @@
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
                                         <Border x:Name="pill" Background="Transparent" BorderBrush="Transparent" BorderThickness="1" CornerRadius="8" Padding="10,4">
-                                            <TextBlock x:Name="txt" Text="وب‌سایت رسمی" FontSize="11.5" FontWeight="SemiBold" Foreground="#82829E" VerticalAlignment="Center"
+                                            <TextBlock x:Name="txt" Text="وب‌سایت" FontSize="11.5" FontWeight="SemiBold" Foreground="#82829E" VerticalAlignment="Center"
                                                        TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"/>
                                         </Border>
                                         <ControlTemplate.Triggers>
