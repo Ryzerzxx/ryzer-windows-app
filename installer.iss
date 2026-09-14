@@ -1,6 +1,6 @@
 #define MyAppName "RyzerDNS Client"
 #define MyAppShortName "RyzerDNS"
-#define MyAppVersion "1.0.0.0"
+#define MyAppVersion "1.0.1"
 #define MyAppPublisher "RyzerDNS"
 #define MyAppURL "https://ryzerdns.ir"
 #define MyAppExeName "RyzerDNS.exe"
