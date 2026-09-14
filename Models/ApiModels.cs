@@ -123,7 +123,55 @@ namespace RyzerDNS.Models
         [JsonPropertyName("update_url")]
         public string? UpdateUrl { get; set; }
 
+        [JsonPropertyName("announcement")]
+        public string? Announcement { get; set; }
+
+        [JsonPropertyName("ui_config")]
+        public AppUiConfig? UiConfig { get; set; }
+
         [JsonIgnore]
         public bool IsSuccess => string.Equals(Status, "success", StringComparison.OrdinalIgnoreCase);
+    }
+
+    public class AppUiConfig
+    {
+        [JsonPropertyName("about_title")]
+        public string? AboutTitle { get; set; }
+
+        [JsonPropertyName("about_message")]
+        public string? AboutMessage { get; set; }
+
+        [JsonPropertyName("about_button_text")]
+        public string? AboutButtonText { get; set; }
+
+        [JsonPropertyName("connect_btn_text")]
+        public string? ConnectBtnText { get; set; }
+
+        [JsonPropertyName("disconnect_btn_text")]
+        public string? DisconnectBtnText { get; set; }
+
+        [JsonPropertyName("status_connected_text")]
+        public string? StatusConnectedText { get; set; }
+
+        [JsonPropertyName("status_disconnected_text")]
+        public string? StatusDisconnectedText { get; set; }
+
+        [JsonPropertyName("website_url")]
+        public string? WebsiteUrl { get; set; }
+
+        [JsonPropertyName("telegram_channel_url")]
+        public string? TelegramChannelUrl { get; set; }
+
+        [JsonPropertyName("telegram_bot_url")]
+        public string? TelegramBotUrl { get; set; }
+
+        [JsonPropertyName("support_url")]
+        public string? SupportUrl { get; set; }
+
+        [JsonPropertyName("banner_enabled")]
+        public bool BannerEnabled { get; set; } = false;
+
+        [JsonPropertyName("banner_text")]
+        public string? BannerText { get; set; }
     }
 }

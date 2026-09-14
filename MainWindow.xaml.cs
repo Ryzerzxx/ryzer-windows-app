@@ -40,6 +40,7 @@ namespace RyzerDNS
 
         private AppSettings _settings;
         private ProfileResponse? _currentProfile;
+        private AppConfigResponse? _remoteConfig;
         private bool _isConnected = false;
         private bool _isProcessing = false;
 
@@ -144,6 +145,8 @@ namespace RyzerDNS
                 var config = await _apiService.GetRemoteConfigAsync();
                 if (config != null)
                 {
+                    _remoteConfig = config;
+
                     if (!string.IsNullOrWhiteSpace(config.PrimaryDns))
                     {
                         DnsManagerService.PrimaryDns = config.PrimaryDns.Trim();
@@ -152,6 +155,12 @@ namespace RyzerDNS
                     {
                         DnsManagerService.SecondaryDns = config.SecondaryDns.Trim();
                     }
+
+                    // Update dynamic UI state if needed
+                    Dispatcher.Invoke(() =>
+                    {
+                        SetConnectionUiState(_isConnected);
+                    });
 
                     // Refresh latency ping with the updated server IP
                     _ = UpdatePingAsync();
@@ -915,7 +924,7 @@ namespace RyzerDNS
 
                 if (txtBtnState != null)
                 {
-                    txtBtnState.Text = "قطع اتصال";
+                    txtBtnState.Text = _remoteConfig?.UiConfig?.DisconnectBtnText ?? "قطع اتصال";
                     txtBtnState.Foreground = Brushes.White;
                 }
             }
@@ -1020,7 +1029,7 @@ namespace RyzerDNS
 
                     if (txtBtnState != null)
                     {
-                        txtBtnState.Text = "اتصال";
+                        txtBtnState.Text = _remoteConfig?.UiConfig?.ConnectBtnText ?? "اتصال";
                         txtBtnState.Foreground = Brushes.White;
                     }
                 }
@@ -1198,22 +1207,29 @@ namespace RyzerDNS
 
         private void BtnOpenWebsite_Click(object sender, RoutedEventArgs e)
         {
-            OpenBrowserUrl("https://ryzerdns.ir");
+            string url = _remoteConfig?.UiConfig?.WebsiteUrl ?? "https://ryzerdns.ir";
+            OpenBrowserUrl(url);
         }
 
         private void BtnOpenTelegram_Click(object sender, RoutedEventArgs e)
         {
-            OpenBrowserUrl("https://t.me/ryzerdns");
+            string url = _remoteConfig?.UiConfig?.TelegramChannelUrl ?? "https://t.me/ryzerdns";
+            OpenBrowserUrl(url);
         }
 
         private void BtnOpenBot_Click(object sender, RoutedEventArgs e)
         {
-            OpenBrowserUrl("https://t.me/RyzerDnsBot");
+            string url = _remoteConfig?.UiConfig?.TelegramBotUrl ?? "https://t.me/RyzerDnsBot";
+            OpenBrowserUrl(url);
         }
 
         private void BtnAbout_Click(object sender, RoutedEventArgs e)
         {
-            ShowModal("درباره رایزر دی‌ان‌اس", "نسخه رسمی کلاینت ویندوز RyzerDNS\nسرویس هوشمند رفع تحریم و کاهش پینگ بازی‌ها\nوب‌سایت: ryzerdns.ir", "متوجه شدم", null, null, null, ModalType.Info);
+            string title = _remoteConfig?.UiConfig?.AboutTitle ?? "درباره رایزر دی‌ان‌اس";
+            string message = _remoteConfig?.UiConfig?.AboutMessage ?? "رایزر دی‌ان‌اس | RyzerDNS Client\n\n• سرویس هوشمند کاهش پینگ و رفع تحریم بازی‌ها\n• بهینه‌سازی اختصاصی استیم، اپیک‌گیمز، بتل‌نت، هوش مصنوعی و دیسکورد\n• پایداری حداکثری و ترافیک Clean Direct\n\nوب‌سایت: ryzerdns.ir\nکانال تلگرام: @RyzerDNS";
+            string buttonText = _remoteConfig?.UiConfig?.AboutButtonText ?? "متوجه شدم";
+
+            ShowModal(title, message, buttonText, null, null, null, ModalType.Info);
         }
 
         private static void OpenBrowserUrl(string url)
