@@ -158,11 +158,35 @@ namespace RyzerDNS.Services
             }
         }
 
-        public async Task<(bool success, string message)> RegisterIpAsync(string token)
+        public async Task<string?> DetectIpAsync()
         {
             try
             {
-                var payload = new RegisterIpRequest { Token = token };
+                var response = await _httpClient.GetAsync("/api/user/detect-ip");
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    using var doc = JsonDocument.Parse(responseBody);
+                    if (doc.RootElement.TryGetProperty("ip", out var ipElem))
+                    {
+                        string? ip = ipElem.GetString()?.Trim();
+                        if (!string.IsNullOrEmpty(ip)) return ip;
+                    }
+                }
+            }
+            catch { }
+            return null;
+        }
+
+        public async Task<(bool success, string message, string? registeredIp)> RegisterIpAsync(string token, string? manualIp = null)
+        {
+            try
+            {
+                var payload = new RegisterIpRequest 
+                { 
+                    Token = token,
+                    ManualIp = manualIp
+                };
                 string json = JsonSerializer.Serialize(payload);
                 var content = new StringContent(json, Encoding.UTF8, "application/json");
 
@@ -174,9 +198,9 @@ namespace RyzerDNS.Services
                     var res = JsonSerializer.Deserialize<RegisterIpResponse>(responseBody, _jsonOptions);
                     if (res != null && res.IsSuccess)
                     {
-                        return (true, res.Message ?? res.Detail ?? "آدرس آی‌پی با موفقیت در فایروال سرور ثبت شد.");
+                        return (true, res.Message ?? res.Detail ?? "آدرس آی‌پی با موفقیت در فایروال سرور ثبت شد.", res.RegisteredIp);
                     }
-                    return (false, res?.Message ?? res?.Detail ?? "خطا در ثبت آی‌پی توسط سرور.");
+                    return (false, res?.Message ?? res?.Detail ?? "خطا در ثبت آی‌پی توسط سرور.", null);
                 }
                 else
                 {
@@ -184,16 +208,16 @@ namespace RyzerDNS.Services
                     {
                         var errObj = JsonSerializer.Deserialize<RegisterIpResponse>(responseBody, _jsonOptions);
                         if (!string.IsNullOrEmpty(errObj?.Message))
-                            return (false, errObj.Message);
+                            return (false, errObj.Message, null);
                     }
                     catch { }
 
-                    return (false, $"خطای سرور ({response.StatusCode}) در ثبت آی‌پی.");
+                    return (false, $"خطای سرور ({response.StatusCode}) در ثبت آی‌پی.", null);
                 }
             }
             catch (Exception ex)
             {
-                return (false, $"خطا در اتصال به سرور برای ثبت آی‌پی: {ex.Message}");
+                return (false, $"خطا در اتصال به سرور برای ثبت آی‌پی: {ex.Message}", null);
             }
         }
 

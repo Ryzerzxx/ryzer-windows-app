@@ -409,6 +409,7 @@
                 <Grid x:Name="DashboardPanel" Visibility="Collapsed">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/> <!-- User Profile Glass Section -->
+                        <RowDefinition Height="Auto"/> <!-- IP Management Glass Section -->
                         <RowDefinition Height="*"/>    <!-- Cyber-Core Switch in Center -->
                         <RowDefinition Height="Auto"/> <!-- Symmetrical Glass Ping Card -->
                         <RowDefinition Height="Auto"/> <!-- Community Links & Version Info Bar -->
@@ -459,8 +460,85 @@
                         </Grid>
                     </Border>
 
+                    <!-- 1.5 IP Management Cyber-Glass Card (Row 1) -->
+                    <Border Grid.Row="1" Background="{StaticResource GlassCardBg}" BorderBrush="{StaticResource GlassCardBorder}" BorderThickness="1" CornerRadius="14" Padding="14,10" Margin="0,8,0,0">
+                        <Grid>
+                            <!-- Top Subtle Glass Reflex Highlight Line -->
+                            <Border Height="1" Background="#FFFFFF" Opacity="0.05" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0,-10,0,0"/>
+
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Top Row: Icon + Label on Right, Status Badge on Left (RTL Flow) -->
+                                <Grid Grid.Row="0" FlowDirection="RightToLeft" Margin="0,0,0,8">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Right: Icon + Label -->
+                                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <Border Background="#1A00E5FF" CornerRadius="6" Width="22" Height="22" Margin="0,0,8,0">
+                                            <TextBlock Text="🌐" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <TextBlock Text="آدرس آی‌پی سیستم" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center"/>
+                                    </StackPanel>
+
+                                    <!-- Left: Status Badge Pill -->
+                                    <Border Grid.Column="1" x:Name="BadgeIpStatus" Background="#1A00E676" BorderBrush="#6600E676" BorderThickness="1" CornerRadius="6" Padding="7,2" VerticalAlignment="Center">
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Ellipse x:Name="DotIpStatus" Width="6" Height="6" Fill="#00E676" Margin="0,0,5,0" VerticalAlignment="Center"/>
+                                            <TextBlock x:Name="TxtIpStatus" Text="همگام و ثبت‌شده" FontSize="10" FontWeight="Bold" Foreground="#00E676" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+
+                                <!-- Middle Row: IP Display Box on Right + Register Button on Left -->
+                                <Grid Grid.Row="1" Margin="0,0,0,6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- IP Address Display Box -->
+                                    <Border Grid.Column="0" Background="#0A0A14" BorderBrush="#1AFFFFFF" BorderThickness="1" CornerRadius="8" Height="36" Padding="10,0" Margin="0,0,8,0">
+                                        <Grid VerticalAlignment="Center">
+                                            <TextBlock x:Name="TxtDetectedIp" Text="در حال بررسی..." FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource LogoFont}" Foreground="#00E5FF" VerticalAlignment="Center"/>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Manual Register / Sync Button -->
+                                    <Button Grid.Column="1" x:Name="BtnRegisterIp" Click="BtnRegisterIp_Click" Height="36" Background="Transparent" BorderThickness="0" Cursor="Hand">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="btnBdr" Background="{StaticResource AccentRed}" BorderBrush="Transparent" BorderThickness="1" CornerRadius="8" Padding="14,0" VerticalAlignment="Stretch">
+                                                    <TextBlock x:Name="BtnRegisterText" Text="ثبت آی‌پی" FontSize="11.5" FontWeight="Bold" Foreground="#FFFFFF" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="btnBdr" Property="Background" Value="#FF1744"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="False">
+                                                        <Setter TargetName="btnBdr" Property="Opacity" Value="0.6"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+                                </Grid>
+
+                                <!-- Bottom Helper Note: 1-minute auto-check indicator -->
+                                <TextBlock Grid.Row="2" Text="• بررسی خودکار هر ۱ دقیقه فعال است (تغییر شبکه خودکار ثبت می‌شود)." FontSize="10" Foreground="#66FFFFFF" FlowDirection="RightToLeft"/>
+                            </Grid>
+                        </Grid>
+                    </Border>
+
                     <!-- 2. Cyber-Core Switch Area in Center -->
-                    <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <StackPanel Grid.Row="2" VerticalAlignment="Center" HorizontalAlignment="Center">
 
                         <!-- Luxury Minimalist Cyber-Glass Power Switch (Diameter 154) -->
                         <Button x:Name="BtnConnect" Click="BtnConnect_Click" Width="154" Height="154" Cursor="Hand">
@@ -592,7 +670,7 @@
                     </StackPanel>
 
                     <!-- 3. Symmetrical Glass Ping Card (Center of Bottom) -->
-                    <Border Grid.Row="2" Background="{StaticResource GlassCardBg}" BorderBrush="{StaticResource GlassCardBorder}" BorderThickness="1" CornerRadius="14" Padding="18,12" Margin="14,0,14,6">
+                    <Border Grid.Row="3" Background="{StaticResource GlassCardBg}" BorderBrush="{StaticResource GlassCardBorder}" BorderThickness="1" CornerRadius="14" Padding="18,12" Margin="14,0,14,6">
                         <Grid>
                             <!-- Top Subtle Glass Reflex Highlight Line -->
                             <Border Height="1" Background="#FFFFFF" Opacity="0.05" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="0,-12,0,0"/>
@@ -658,7 +736,7 @@
                     </Border>
 
                     <!-- 4. Ultra-Sleek Minimal Footer Bar (Dashboard Panel): وب‌سایت رسمی • کانال تلگرام • بات تلگرام -->
-                    <Border Grid.Row="3" Height="34" Background="#0C0C16" BorderBrush="#1C1C2E"
+                    <Border Grid.Row="4" Height="34" Background="#0C0C16" BorderBrush="#1C1C2E"
                             BorderThickness="1" CornerRadius="17" Padding="8,0" Margin="0,8,0,0" HorizontalAlignment="Center">
                         <StackPanel Orientation="Horizontal" FlowDirection="RightToLeft" HorizontalAlignment="Center" VerticalAlignment="Center">
                             <Button Click="BtnOpenWebsite_Click" Background="Transparent" BorderThickness="0" Cursor="Hand" Padding="2,0" Margin="2,0">

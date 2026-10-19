@@ -71,12 +71,18 @@ namespace RyzerDNS.Models
     {
         [JsonPropertyName("token")]
         public string Token { get; set; } = string.Empty;
+
+        [JsonPropertyName("manual_ip")]
+        public string? ManualIp { get; set; }
     }
 
     public class RegisterIpResponse
     {
         [JsonPropertyName("status")]
         public string? Status { get; set; }
+
+        [JsonPropertyName("registered_ip")]
+        public string? RegisteredIp { get; set; }
 
         private string? _message;
         [JsonPropertyName("message")]
@@ -112,7 +118,7 @@ namespace RyzerDNS.Models
         public string PrimaryDns { get; set; } = "87.248.145.40";
 
         [JsonPropertyName("secondary_dns")]
-        public string SecondaryDns { get; set; } = "46.8.102.223";
+        public string SecondaryDns { get; set; } = "193.242.208.98";
 
         [JsonPropertyName("latest_version")]
         public string? LatestVersion { get; set; }

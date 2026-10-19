@@ -32,6 +32,22 @@ namespace RyzerDNS
         private static readonly SolidColorBrush BrushTextSecondary = new SolidColorBrush(Color.FromRgb(142, 142, 168));
         private static readonly SolidColorBrush BrushTextMuted = new SolidColorBrush(Color.FromRgb(90, 90, 114));
 
+        private static readonly SolidColorBrush BrushBadgeGreenBg = new SolidColorBrush(Color.FromArgb(26, 0, 230, 118));
+        private static readonly SolidColorBrush BrushBadgeGreenBorder = new SolidColorBrush(Color.FromArgb(102, 0, 230, 118));
+        private static readonly SolidColorBrush BrushBadgeGreenText = new SolidColorBrush(Color.FromRgb(0, 230, 118));
+
+        private static readonly SolidColorBrush BrushBadgeOrangeBg = new SolidColorBrush(Color.FromArgb(26, 255, 179, 0));
+        private static readonly SolidColorBrush BrushBadgeOrangeBorder = new SolidColorBrush(Color.FromArgb(102, 255, 179, 0));
+        private static readonly SolidColorBrush BrushBadgeOrangeText = new SolidColorBrush(Color.FromRgb(255, 179, 0));
+
+        private static readonly SolidColorBrush BrushBadgeBlueBg = new SolidColorBrush(Color.FromArgb(26, 0, 229, 255));
+        private static readonly SolidColorBrush BrushBadgeBlueBorder = new SolidColorBrush(Color.FromArgb(102, 0, 229, 255));
+        private static readonly SolidColorBrush BrushBadgeBlueText = new SolidColorBrush(Color.FromRgb(0, 229, 255));
+
+        private static readonly SolidColorBrush BrushBadgeGrayBg = new SolidColorBrush(Color.FromArgb(13, 255, 255, 255));
+        private static readonly SolidColorBrush BrushBadgeGrayBorder = new SolidColorBrush(Color.FromArgb(26, 255, 255, 255));
+        private static readonly SolidColorBrush BrushBadgeGrayText = new SolidColorBrush(Color.FromArgb(102, 255, 255, 255));
+
         private readonly ApiService _apiService;
         private readonly StorageService _storageService;
         private readonly DnsManagerService _dnsService;
@@ -43,6 +59,12 @@ namespace RyzerDNS
         private AppConfigResponse? _remoteConfig;
         private bool _isConnected = false;
         private bool _isProcessing = false;
+
+        private string? _currentDetectedIp;
+        private string? _currentRegisteredIp;
+        private bool _isDetectingIp;
+        private bool _isRegisteringIp;
+        private System.Windows.Threading.DispatcherTimer? _ipCheckTimer;
 
         public MainWindow()
         {
@@ -88,6 +110,18 @@ namespace RyzerDNS
             // Check if Ryzer DNS is already active on the machine
             bool dnsActive = _dnsService.IsRyzerDnsActive();
             SetConnectionUiState(dnsActive);
+
+            // Start 1-minute periodic IP check timer
+            _ipCheckTimer?.Stop();
+            _ipCheckTimer = new System.Windows.Threading.DispatcherTimer
+            {
+                Interval = TimeSpan.FromMinutes(1)
+            };
+            _ipCheckTimer.Tick += (s, ev) => _ = DetectAndSyncIpAsync(silent: true);
+            _ipCheckTimer.Start();
+
+            // Initial IP detection
+            _ = DetectAndSyncIpAsync(silent: false);
 
             // Auto-login if token is saved (Persistent Login)
             if (!string.IsNullOrEmpty(_settings.Token))
@@ -366,6 +400,12 @@ namespace RyzerDNS
             {
                 SetConnectionUiState(false);
             }
+
+            if (!string.IsNullOrEmpty(profile.RegisteredIp))
+            {
+                _currentRegisteredIp = profile.RegisteredIp;
+            }
+            UpdateIpBadgeUi(isDetecting: _isDetectingIp);
         }
 
         #region Login Events
@@ -634,14 +674,20 @@ namespace RyzerDNS
 
                     // Run IP firewall registration and local adapter DNS set concurrently
                     var registerTask = !string.IsNullOrEmpty(_settings.Token)
-                        ? _apiService.RegisterIpAsync(_settings.Token)
-                        : Task.FromResult((true, ""));
+                        ? _apiService.RegisterIpAsync(_settings.Token, _currentDetectedIp)
+                        : Task.FromResult((true, "", (string?)null));
 
                     var setDnsTask = _dnsService.SetRyzerDnsAsync();
                     var minDisplayTask = Task.Delay(800);
 
                     await Task.WhenAll(registerTask, setDnsTask, minDisplayTask);
                     var (dnsSuccess, dnsMsg) = await setDnsTask;
+                    var (regSuccess, _, regIp) = await registerTask;
+                    if (regSuccess && !string.IsNullOrEmpty(regIp))
+                    {
+                        _currentRegisteredIp = regIp;
+                        Dispatcher.Invoke(() => UpdateIpBadgeUi(isDetecting: false));
+                    }
 
                     if (!dnsSuccess)
                     {
@@ -715,6 +761,231 @@ namespace RyzerDNS
 
             await UpdatePingAsync();
         }
+
+        #region IP Management & Auto-Check (1-Minute Periodic)
+
+        private async void BtnRegisterIp_Click(object sender, RoutedEventArgs e)
+        {
+            await ExecuteRegisterIpAsync(silent: false);
+        }
+
+        private async Task DetectAndSyncIpAsync(bool silent = false)
+        {
+            if (_isDetectingIp || _isRegisteringIp) return;
+            _isDetectingIp = true;
+
+            if (!silent)
+            {
+                UpdateIpBadgeUi(isDetecting: true);
+            }
+
+            try
+            {
+                string? detected = await _apiService.DetectIpAsync();
+                _isDetectingIp = false;
+
+                if (!string.IsNullOrEmpty(detected))
+                {
+                    _currentDetectedIp = detected;
+                }
+
+                string saved = _currentRegisteredIp ?? _currentProfile?.RegisteredIp ?? "";
+                bool isSynced = !string.IsNullOrEmpty(_currentDetectedIp) && _currentDetectedIp == saved;
+
+                if (!string.IsNullOrEmpty(_settings.Token))
+                {
+                    bool hasChanged = !string.IsNullOrEmpty(_currentDetectedIp) && _currentDetectedIp != saved;
+                    if (hasChanged || string.IsNullOrEmpty(saved))
+                    {
+                        // Auto-register on IP change or initial empty
+                        await ExecuteRegisterIpAsync(silent: true);
+                        return;
+                    }
+                }
+
+                UpdateIpBadgeUi(isDetecting: false);
+            }
+            catch
+            {
+                _isDetectingIp = false;
+                UpdateIpBadgeUi(isDetecting: false);
+            }
+        }
+
+        private async Task ExecuteRegisterIpAsync(bool silent = false)
+        {
+            if (string.IsNullOrEmpty(_settings.Token))
+            {
+                ShowLogin();
+                return;
+            }
+
+            if (_isRegisteringIp) return;
+            _isRegisteringIp = true;
+
+            Dispatcher.Invoke(() =>
+            {
+                BtnRegisterIp.IsEnabled = false;
+                BtnRegisterText.Text = "در حال ثبت...";
+            });
+
+            try
+            {
+                var (success, msg, regIp) = await _apiService.RegisterIpAsync(_settings.Token, _currentDetectedIp);
+                _isRegisteringIp = false;
+
+                if (success)
+                {
+                    _currentRegisteredIp = !string.IsNullOrEmpty(regIp) ? regIp : _currentDetectedIp;
+                    if (_currentProfile != null)
+                    {
+                        _currentProfile.RegisteredIp = _currentRegisteredIp;
+                    }
+
+                    Dispatcher.Invoke(() =>
+                    {
+                        BtnRegisterIp.IsEnabled = true;
+                        UpdateIpBadgeUi(isDetecting: false);
+                        if (!silent)
+                        {
+                            ShowModal(
+                                title: "ثبت موفق آی‌پی",
+                                message: $"آدرس آی‌پی سیستم شما ({_currentRegisteredIp}) با موفقیت در سیستم RyzerDNS ثبت و همگام شد.",
+                                primaryText: "بسیار عالی",
+                                onPrimary: null,
+                                type: ModalType.Info);
+                        }
+                    });
+                }
+                else
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        BtnRegisterIp.IsEnabled = true;
+                        UpdateIpBadgeUi(isDetecting: false);
+                        if (!silent)
+                        {
+                            ShowModal(
+                                title: "خطا در ثبت آی‌پی",
+                                message: msg,
+                                primaryText: "تایید",
+                                onPrimary: null,
+                                type: ModalType.Warning);
+                        }
+                    });
+                }
+            }
+            catch (Exception ex)
+            {
+                _isRegisteringIp = false;
+                Dispatcher.Invoke(() =>
+                {
+                    BtnRegisterIp.IsEnabled = true;
+                    UpdateIpBadgeUi(isDetecting: false);
+                    if (!silent)
+                    {
+                        ShowModal(
+                            title: "خطا در اتصال",
+                            message: $"خطا در اتصال به سرور: {ex.Message}",
+                            primaryText: "تایید",
+                            onPrimary: null,
+                            type: ModalType.Error);
+                    }
+                });
+            }
+        }
+
+        private void UpdateIpBadgeUi(bool isDetecting = false)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                bool hasDetected = !string.IsNullOrEmpty(_currentDetectedIp);
+                string registeredIp = _currentRegisteredIp ?? _currentProfile?.RegisteredIp ?? "";
+                bool isSynced = !string.IsNullOrEmpty(_settings.Token) &&
+                                !string.IsNullOrEmpty(registeredIp) &&
+                                hasDetected &&
+                                registeredIp == _currentDetectedIp;
+
+                // 1. IP Text Box
+                if (hasDetected)
+                {
+                    TxtDetectedIp.Text = _currentDetectedIp;
+                    TxtDetectedIp.Foreground = BrushBadgeBlueText;
+                }
+                else if (!string.IsNullOrEmpty(registeredIp))
+                {
+                    TxtDetectedIp.Text = registeredIp;
+                    TxtDetectedIp.Foreground = Brushes.White;
+                }
+                else if (isDetecting)
+                {
+                    TxtDetectedIp.Text = "در حال دریافت...";
+                    TxtDetectedIp.Foreground = BrushTextSecondary;
+                }
+                else
+                {
+                    TxtDetectedIp.Text = "شناسایی‌نشده";
+                    TxtDetectedIp.Foreground = BrushTextMuted;
+                }
+
+                // 2. Status Badge Pill
+                if (isDetecting)
+                {
+                    TxtIpStatus.Text = "در حال بررسی";
+                    TxtIpStatus.Foreground = BrushBadgeBlueText;
+                    DotIpStatus.Fill = BrushBadgeBlueText;
+                    BadgeIpStatus.Background = BrushBadgeBlueBg;
+                    BadgeIpStatus.BorderBrush = BrushBadgeBlueBorder;
+                }
+                else if (isSynced)
+                {
+                    TxtIpStatus.Text = "همگام و ثبت‌شده";
+                    TxtIpStatus.Foreground = BrushBadgeGreenText;
+                    DotIpStatus.Fill = BrushBadgeGreenText;
+                    BadgeIpStatus.Background = BrushBadgeGreenBg;
+                    BadgeIpStatus.BorderBrush = BrushBadgeGreenBorder;
+                }
+                else if (!string.IsNullOrEmpty(_settings.Token))
+                {
+                    if (hasDetected)
+                    {
+                        TxtIpStatus.Text = "نیاز به ثبت";
+                        TxtIpStatus.Foreground = BrushBadgeOrangeText;
+                        DotIpStatus.Fill = BrushBadgeOrangeText;
+                        BadgeIpStatus.Background = BrushBadgeOrangeBg;
+                        BadgeIpStatus.BorderBrush = BrushBadgeOrangeBorder;
+                    }
+                    else
+                    {
+                        TxtIpStatus.Text = "نامشخص";
+                        TxtIpStatus.Foreground = BrushBadgeGrayText;
+                        DotIpStatus.Fill = BrushBadgeGrayText;
+                        BadgeIpStatus.Background = BrushBadgeGrayBg;
+                        BadgeIpStatus.BorderBrush = BrushBadgeGrayBorder;
+                    }
+                }
+                else
+                {
+                    TxtIpStatus.Text = hasDetected ? "نیاز به ورود" : "نامشخص";
+                    TxtIpStatus.Foreground = hasDetected ? BrushBadgeOrangeText : BrushBadgeGrayText;
+                    DotIpStatus.Fill = hasDetected ? BrushBadgeOrangeText : BrushBadgeGrayText;
+                    BadgeIpStatus.Background = hasDetected ? BrushBadgeOrangeBg : BrushBadgeGrayBg;
+                    BadgeIpStatus.BorderBrush = hasDetected ? BrushBadgeOrangeBorder : BrushBadgeGrayBorder;
+                }
+
+                // 3. Register Button text
+                if (isSynced)
+                {
+                    BtnRegisterText.Text = "ثبت مجدد";
+                }
+                else
+                {
+                    BtnRegisterText.Text = "ثبت آی‌پی";
+                }
+            });
+        }
+
+        #endregion
 
         private void BtnLogout_Click(object sender, RoutedEventArgs e)
         {

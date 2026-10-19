@@ -19,10 +19,10 @@
     <AssemblyTitle>RyzerDNS Network Optimizer</AssemblyTitle>
     <Description>RyzerDNS Network Optimizer</Description>
     <Copyright>© 2026 RyzerDNS</Copyright>
-    <Version>1.0.1.0</Version>
-    <AssemblyVersion>1.0.1.0</AssemblyVersion>
-    <FileVersion>1.0.1.0</FileVersion>
-    <InformationalVersion>1.0.1.0</InformationalVersion>
+    <Version>1.0.4.0</Version>
+    <AssemblyVersion>1.0.4.0</AssemblyVersion>
+    <FileVersion>1.0.4.0</FileVersion>
+    <InformationalVersion>1.0.4.0</InformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>
