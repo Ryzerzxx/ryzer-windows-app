@@ -764,12 +764,33 @@ namespace RyzerDNS
 
         #region IP Management & Auto-Check (1-Minute Periodic)
 
+        private async void BtnRefreshIp_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                var icon = (Path?)BtnRefreshIp.Template.FindName("IpRefreshIcon", BtnRefreshIp);
+                if (icon?.RenderTransform is RotateTransform rotate)
+                {
+                    var anim = new DoubleAnimation
+                    {
+                        From = 0,
+                        To = 360,
+                        Duration = TimeSpan.FromMilliseconds(450)
+                    };
+                    rotate.BeginAnimation(RotateTransform.AngleProperty, anim);
+                }
+            }
+            catch { }
+
+            await DetectAndSyncIpAsync(silent: false, forceRefresh: true);
+        }
+
         private async void BtnRegisterIp_Click(object sender, RoutedEventArgs e)
         {
             await ExecuteRegisterIpAsync(silent: false);
         }
 
-        private async Task DetectAndSyncIpAsync(bool silent = false)
+        private async Task DetectAndSyncIpAsync(bool silent = false, bool forceRefresh = false)
         {
             if (_isDetectingIp || _isRegisteringIp) return;
             _isDetectingIp = true;
@@ -792,7 +813,7 @@ namespace RyzerDNS
                 string saved = _currentRegisteredIp ?? _currentProfile?.RegisteredIp ?? "";
                 bool isSynced = !string.IsNullOrEmpty(_currentDetectedIp) && _currentDetectedIp == saved;
 
-                if (!string.IsNullOrEmpty(_settings.Token))
+                if (!forceRefresh && !string.IsNullOrEmpty(_settings.Token))
                 {
                     bool hasChanged = !string.IsNullOrEmpty(_currentDetectedIp) && _currentDetectedIp != saved;
                     if (hasChanged || string.IsNullOrEmpty(saved))
@@ -928,52 +949,7 @@ namespace RyzerDNS
                     TxtDetectedIp.Foreground = BrushTextMuted;
                 }
 
-                // 2. Status Badge Pill
-                if (isDetecting)
-                {
-                    TxtIpStatus.Text = "در حال بررسی";
-                    TxtIpStatus.Foreground = BrushBadgeBlueText;
-                    DotIpStatus.Fill = BrushBadgeBlueText;
-                    BadgeIpStatus.Background = BrushBadgeBlueBg;
-                    BadgeIpStatus.BorderBrush = BrushBadgeBlueBorder;
-                }
-                else if (isSynced)
-                {
-                    TxtIpStatus.Text = "همگام و ثبت‌شده";
-                    TxtIpStatus.Foreground = BrushBadgeGreenText;
-                    DotIpStatus.Fill = BrushBadgeGreenText;
-                    BadgeIpStatus.Background = BrushBadgeGreenBg;
-                    BadgeIpStatus.BorderBrush = BrushBadgeGreenBorder;
-                }
-                else if (!string.IsNullOrEmpty(_settings.Token))
-                {
-                    if (hasDetected)
-                    {
-                        TxtIpStatus.Text = "نیاز به ثبت";
-                        TxtIpStatus.Foreground = BrushBadgeOrangeText;
-                        DotIpStatus.Fill = BrushBadgeOrangeText;
-                        BadgeIpStatus.Background = BrushBadgeOrangeBg;
-                        BadgeIpStatus.BorderBrush = BrushBadgeOrangeBorder;
-                    }
-                    else
-                    {
-                        TxtIpStatus.Text = "نامشخص";
-                        TxtIpStatus.Foreground = BrushBadgeGrayText;
-                        DotIpStatus.Fill = BrushBadgeGrayText;
-                        BadgeIpStatus.Background = BrushBadgeGrayBg;
-                        BadgeIpStatus.BorderBrush = BrushBadgeGrayBorder;
-                    }
-                }
-                else
-                {
-                    TxtIpStatus.Text = hasDetected ? "نیاز به ورود" : "نامشخص";
-                    TxtIpStatus.Foreground = hasDetected ? BrushBadgeOrangeText : BrushBadgeGrayText;
-                    DotIpStatus.Fill = hasDetected ? BrushBadgeOrangeText : BrushBadgeGrayText;
-                    BadgeIpStatus.Background = hasDetected ? BrushBadgeOrangeBg : BrushBadgeGrayBg;
-                    BadgeIpStatus.BorderBrush = hasDetected ? BrushBadgeOrangeBorder : BrushBadgeGrayBorder;
-                }
-
-                // 3. Register Button text
+                // 2. Register Button text
                 if (isSynced)
                 {
                     BtnRegisterIp.Content = "ثبت مجدد";

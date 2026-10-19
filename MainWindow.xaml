@@ -473,41 +473,59 @@
                                     <RowDefinition Height="Auto"/>
                                 </Grid.RowDefinitions>
 
-                                <!-- Top Row: Icon + Label on Right, Status Badge on Left (RTL Flow) -->
-                                <Grid Grid.Row="0" FlowDirection="RightToLeft" Margin="0,0,0,8">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <!-- Right: Icon + Label -->
-                                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                                        <Border Background="#1A00E5FF" CornerRadius="6" Width="22" Height="22" Margin="0,0,8,0">
-                                            <TextBlock Text="🌐" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                        </Border>
-                                        <TextBlock Text="آدرس آی‌پی سیستم" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center"/>
-                                    </StackPanel>
-
-                                    <!-- Left: Status Badge Pill -->
-                                    <Border Grid.Column="1" x:Name="BadgeIpStatus" Background="#1A00E676" BorderBrush="#6600E676" BorderThickness="1" CornerRadius="6" Padding="7,2" VerticalAlignment="Center">
-                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                            <Ellipse x:Name="DotIpStatus" Width="6" Height="6" Fill="#00E676" Margin="0,0,5,0" VerticalAlignment="Center"/>
-                                            <TextBlock x:Name="TxtIpStatus" Text="همگام و ثبت‌شده" FontSize="10" FontWeight="Bold" Foreground="#00E676" VerticalAlignment="Center"/>
-                                        </StackPanel>
+                                <!-- Top Row: Icon + Label -->
+                                <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,8" FlowDirection="RightToLeft">
+                                    <Border Background="#1A00E5FF" CornerRadius="6" Width="22" Height="22" Margin="0,0,8,0">
+                                        <TextBlock Text="🌐" FontSize="11" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                     </Border>
-                                </Grid>
+                                    <TextBlock Text="آدرس آی‌پی سیستم" FontSize="12" FontWeight="Bold" Foreground="{StaticResource TextPrimary}" VerticalAlignment="Center"
+                                               TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"/>
+                                </StackPanel>
 
-                                <!-- Middle Row: IP Display Box on Right + Register Button on Left -->
-                                <Grid Grid.Row="1" Margin="0,0,0,6">
+                                <!-- Middle Row: IP Display Box on Right (with Refresh Icon) + Register Button on Left -->
+                                <Grid Grid.Row="1" Margin="0,0,0,8">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
                                     </Grid.ColumnDefinitions>
 
-                                    <!-- IP Address Display Box -->
-                                    <Border Grid.Column="0" Background="#0A0A14" BorderBrush="#1AFFFFFF" BorderThickness="1" CornerRadius="8" Height="36" Padding="10,0" Margin="0,0,8,0">
+                                    <!-- IP Address Display Box with Refresh Icon -->
+                                    <Border Grid.Column="0" Background="#0A0A14" BorderBrush="#1AFFFFFF" BorderThickness="1" CornerRadius="8" Height="36" Padding="8,0" Margin="0,0,8,0">
                                         <Grid VerticalAlignment="Center">
-                                            <TextBlock x:Name="TxtDetectedIp" Text="در حال بررسی..." FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource LogoFont}" Foreground="#00E5FF" VerticalAlignment="Center"/>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- IP Text -->
+                                            <TextBlock Grid.Column="0" x:Name="TxtDetectedIp" Text="در حال بررسی..."
+                                                       FontSize="13.5" FontWeight="Bold" FontFamily="{StaticResource LogoFont}" Foreground="#00E5FF"
+                                                       VerticalAlignment="Center" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType"/>
+
+                                            <!-- Small Refresh Button inside IP Box -->
+                                            <Button Grid.Column="1" x:Name="BtnRefreshIp" Click="BtnRefreshIp_Click" Width="24" Height="24"
+                                                    Background="Transparent" BorderThickness="0" Cursor="Hand" ToolTip="شناسایی مجدد آی‌پی">
+                                                <Button.Template>
+                                                    <ControlTemplate TargetType="Button">
+                                                        <Border x:Name="rfBdr" Background="Transparent" CornerRadius="4" Padding="3">
+                                                            <Path x:Name="IpRefreshIcon"
+                                                                  Data="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"
+                                                                  Fill="#8E8EA8" Stretch="Uniform" Width="12" Height="12"
+                                                                  RenderTransformOrigin="0.5,0.5">
+                                                                <Path.RenderTransform>
+                                                                    <RotateTransform x:Name="IpRefreshRotate" Angle="0"/>
+                                                                </Path.RenderTransform>
+                                                            </Path>
+                                                        </Border>
+                                                        <ControlTemplate.Triggers>
+                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                <Setter TargetName="rfBdr" Property="Background" Value="#22FFFFFF"/>
+                                                                <Setter TargetName="IpRefreshIcon" Property="Fill" Value="#00E5FF"/>
+                                                            </Trigger>
+                                                        </ControlTemplate.Triggers>
+                                                    </ControlTemplate>
+                                                </Button.Template>
+                                            </Button>
                                         </Grid>
                                     </Border>
 
@@ -533,8 +551,18 @@
                                     </Button>
                                 </Grid>
 
-                                <!-- Bottom Helper Note: 1-minute auto-check indicator -->
-                                <TextBlock Grid.Row="2" Text="• بررسی خودکار هر ۱ دقیقه فعال است (تغییر شبکه خودکار ثبت می‌شود)." FontSize="10" Foreground="#66FFFFFF" FlowDirection="RightToLeft"/>
+                                <!-- Bottom Helper Note: High-Definition Crisp Typography -->
+                                <StackPanel Grid.Row="2" Orientation="Horizontal" FlowDirection="RightToLeft" VerticalAlignment="Center" Margin="0,2,0,0">
+                                    <Ellipse Width="4.5" Height="4.5" Fill="#00E5FF" VerticalAlignment="Center" Margin="0,0,6,0">
+                                        <Ellipse.Effect>
+                                            <DropShadowEffect BlurRadius="4" Color="#00E5FF" Opacity="0.8" ShadowDepth="0"/>
+                                        </Ellipse.Effect>
+                                    </Ellipse>
+                                    <TextBlock Text="بررسی خودکار وضعیت اینترنت هر ۱ دقیقه فعال است (تغییر شبکه خودکار ثبت می‌شود)."
+                                               FontSize="11" FontWeight="Medium" Foreground="#A2A2BC"
+                                               TextOptions.TextFormattingMode="Display"
+                                               TextOptions.TextRenderingMode="ClearType"/>
+                                </StackPanel>
                             </Grid>
                         </Grid>
                     </Border>
