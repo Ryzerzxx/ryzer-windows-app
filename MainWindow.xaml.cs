@@ -826,7 +826,7 @@ namespace RyzerDNS
             Dispatcher.Invoke(() =>
             {
                 BtnRegisterIp.IsEnabled = false;
-                BtnRegisterText.Text = "در حال ثبت...";
+                BtnRegisterIp.Content = "در حال ثبت...";
             });
 
             try
@@ -976,11 +976,11 @@ namespace RyzerDNS
                 // 3. Register Button text
                 if (isSynced)
                 {
-                    BtnRegisterText.Text = "ثبت مجدد";
+                    BtnRegisterIp.Content = "ثبت مجدد";
                 }
                 else
                 {
-                    BtnRegisterText.Text = "ثبت آی‌پی";
+                    BtnRegisterIp.Content = "ثبت آی‌پی";
                 }
             });
         }
