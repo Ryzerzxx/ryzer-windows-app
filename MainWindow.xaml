@@ -510,7 +510,7 @@
                                                         <Border x:Name="rfBdr" Background="Transparent" CornerRadius="4" Padding="3">
                                                             <Path x:Name="IpRefreshIcon"
                                                                   Data="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"
-                                                                  Fill="#8E8EA8" Stretch="Uniform" Width="12" Height="12"
+                                                                  Fill="#00E5FF" Opacity="0.85" Stretch="Uniform" Width="12" Height="12"
                                                                   RenderTransformOrigin="0.5,0.5">
                                                                 <Path.RenderTransform>
                                                                     <RotateTransform x:Name="IpRefreshRotate" Angle="0"/>
@@ -520,7 +520,7 @@
                                                         <ControlTemplate.Triggers>
                                                             <Trigger Property="IsMouseOver" Value="True">
                                                                 <Setter TargetName="rfBdr" Property="Background" Value="#22FFFFFF"/>
-                                                                <Setter TargetName="IpRefreshIcon" Property="Fill" Value="#00E5FF"/>
+                                                                <Setter TargetName="IpRefreshIcon" Property="Opacity" Value="1.0"/>
                                                             </Trigger>
                                                         </ControlTemplate.Triggers>
                                                     </ControlTemplate>
@@ -551,18 +551,25 @@
                                     </Button>
                                 </Grid>
 
-                                <!-- Bottom Helper Note: High-Definition Crisp Typography -->
-                                <StackPanel Grid.Row="2" Orientation="Horizontal" FlowDirection="RightToLeft" VerticalAlignment="Center" Margin="0,2,0,0">
-                                    <Ellipse Width="4.5" Height="4.5" Fill="#00E5FF" VerticalAlignment="Center" Margin="0,0,6,0">
+                                <!-- Bottom Helper Note: Responsive Grid that never overflows or clips -->
+                                <Grid Grid.Row="2" Margin="0,5,0,0" FlowDirection="RightToLeft">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <Ellipse Grid.Column="0" Width="4.5" Height="4.5" Fill="#00E5FF" VerticalAlignment="Center" Margin="0,0,6,0">
                                         <Ellipse.Effect>
                                             <DropShadowEffect BlurRadius="4" Color="#00E5FF" Opacity="0.8" ShadowDepth="0"/>
                                         </Ellipse.Effect>
                                     </Ellipse>
-                                    <TextBlock Text="بررسی خودکار وضعیت اینترنت هر ۱ دقیقه فعال است (تغییر شبکه خودکار ثبت می‌شود)."
-                                               FontSize="11" FontWeight="Medium" Foreground="#A2A2BC"
+
+                                    <TextBlock Grid.Column="1" Text="بررسی خودکار و ثبت تغییرات شبکه هر ۱ دقیقه فعال است."
+                                               FontSize="10.5" FontWeight="Medium" Foreground="#A2A2BC"
+                                               TextWrapping="Wrap" VerticalAlignment="Center"
                                                TextOptions.TextFormattingMode="Display"
                                                TextOptions.TextRenderingMode="ClearType"/>
-                                </StackPanel>
+                                </Grid>
                             </Grid>
                         </Grid>
                     </Border>

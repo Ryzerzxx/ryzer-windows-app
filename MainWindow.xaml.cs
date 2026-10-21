@@ -452,6 +452,9 @@ namespace RyzerDNS
                 ApplyProfileToUi(_currentProfile, response.WebUsername ?? username);
 
                 ShowDashboard();
+
+                // Instantly detect & sync IP on login
+                _ = DetectAndSyncIpAsync(silent: false);
             }
             else
             {
@@ -486,8 +489,8 @@ namespace RyzerDNS
                 ShowLoginError("مرورگر برای انتخاب حساب گوگل باز شد. لطفاً فرآیند ورود را تکمیل نمایید...");
                 TxtLoginError.Foreground = System.Windows.Media.Brushes.LightSkyBlue;
 
-                // Poll for completion (up to 2 minutes)
-                for (int i = 0; i < 60; i++)
+                // Poll for completion (up to 3 minutes)
+                for (int i = 0; i < 90; i++)
                 {
                     await Task.Delay(2000);
                     var (finished, success, token, username, error) = await _apiService.PollGoogleAuthAsync(stateKey);
@@ -495,8 +498,9 @@ namespace RyzerDNS
                     {
                         if (success && !string.IsNullOrEmpty(token))
                         {
+                            string finalUser = string.IsNullOrWhiteSpace(username) ? "کاربر گرامی" : username.Trim();
                             _settings.Token = token;
-                            _settings.Username = username ?? "کاربر گرامی";
+                            _settings.Username = finalUser;
                             _settings.RememberMe = true;
                             _storageService.SaveSettings(_settings);
 
@@ -505,8 +509,11 @@ namespace RyzerDNS
                             _settings.CachedProfile = _currentProfile;
                             _storageService.SaveSettings(_settings);
 
-                            ApplyProfileToUi(_currentProfile, username ?? "کاربر گرامی");
+                            ApplyProfileToUi(_currentProfile, finalUser);
                             ShowDashboard();
+
+                            // Instantly detect & sync IP on Google login
+                            _ = DetectAndSyncIpAsync(silent: false);
                             return;
                         }
                         else
