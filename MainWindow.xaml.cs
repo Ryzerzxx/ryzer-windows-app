@@ -1480,7 +1480,7 @@ namespace RyzerDNS
         private void BtnAbout_Click(object sender, RoutedEventArgs e)
         {
             string title = _remoteConfig?.UiConfig?.AboutTitle ?? "درباره رایزر دی‌ان‌اس";
-            string message = _remoteConfig?.UiConfig?.AboutMessage ?? "رایزر دی‌ان‌اس | RyzerDNS Client\n\n• سرویس هوشمند کاهش پینگ و رفع تحریم بازی‌ها\n• بهینه‌سازی اختصاصی استیم، اپیک‌گیمز، بتل‌نت، هوش مصنوعی و دیسکورد\n• پایداری حداکثری و ترافیک Clean Direct\n\nوب‌سایت: ryzerdns.ir\nکانال تلگرام: @RyzerDNS";
+            string message = _remoteConfig?.UiConfig?.AboutMessage ?? "رایزر دی‌ان‌اس | RyzerDNS Client v1.1\n\n• نسخه: v1.1\n• سرویس هوشمند کاهش پینگ و رفع تحریم بازی‌ها\n• بهینه‌سازی اختصاصی استیم، اپیک‌گیمز، بتل‌نت، هوش مصنوعی و دیسکورد\n• پایداری حداکثری و ترافیک Clean Direct\n\nوب‌سایت: ryzerdns.ir\nکانال تلگرام: @RyzerDNS";
             string buttonText = _remoteConfig?.UiConfig?.AboutButtonText ?? "متوجه شدم";
 
             ShowModal(title, message, buttonText, null, null, null, ModalType.Info);
