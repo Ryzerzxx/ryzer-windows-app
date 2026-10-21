@@ -174,6 +174,9 @@ namespace RyzerDNS.Models
         [JsonPropertyName("support_url")]
         public string? SupportUrl { get; set; }
 
+        [JsonPropertyName("ip_sync_notice")]
+        public string? IpSyncNotice { get; set; }
+
         [JsonPropertyName("banner_enabled")]
         public bool BannerEnabled { get; set; } = false;
 

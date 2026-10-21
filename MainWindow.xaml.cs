@@ -194,6 +194,10 @@ namespace RyzerDNS
                     Dispatcher.Invoke(() =>
                     {
                         SetConnectionUiState(_isConnected);
+                        if (!string.IsNullOrWhiteSpace(_remoteConfig?.UiConfig?.IpSyncNotice))
+                        {
+                            TxtIpSyncNotice.Text = _remoteConfig.UiConfig.IpSyncNotice;
+                        }
                     });
 
                     // Refresh latency ping with the updated server IP

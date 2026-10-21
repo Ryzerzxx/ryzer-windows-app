@@ -564,7 +564,7 @@
                                         </Ellipse.Effect>
                                     </Ellipse>
 
-                                    <TextBlock Grid.Column="1" Text="بررسی خودکار و ثبت تغییرات شبکه هر ۱ دقیقه فعال است."
+                                    <TextBlock x:Name="TxtIpSyncNotice" Grid.Column="1" Text="بررسی خودکار و ثبت تغییرات شبکه هر ۳۰ ثانیه فعال است."
                                                FontSize="10.5" FontWeight="Medium" Foreground="#A2A2BC"
                                                TextWrapping="Wrap" VerticalAlignment="Center"
                                                TextOptions.TextFormattingMode="Display"
