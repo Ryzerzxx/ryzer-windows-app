@@ -111,11 +111,11 @@ namespace RyzerDNS
             bool dnsActive = _dnsService.IsRyzerDnsActive();
             SetConnectionUiState(dnsActive);
 
-            // Start 1-minute periodic IP check timer
+            // Start 30-second periodic IP check timer
             _ipCheckTimer?.Stop();
             _ipCheckTimer = new System.Windows.Threading.DispatcherTimer
             {
-                Interval = TimeSpan.FromMinutes(1)
+                Interval = TimeSpan.FromSeconds(30)
             };
             _ipCheckTimer.Tick += (s, ev) => _ = DetectAndSyncIpAsync(silent: true);
             _ipCheckTimer.Start();
